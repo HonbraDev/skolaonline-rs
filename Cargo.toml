@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "skolaonline",
+    "skolaonline-ical",
+    "skolaonline-ical-aas",
+]

@@ -1,0 +1,18 @@
+[package]
+name = "skolaonline-ical-aas"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.66"
+axum = "0.5.17"
+axum-auth = "0.3.0"
+base64 = "0.13.1"
+chrono = "0.4.23"
+skolaonline-ical = { version = "0.1.0", path = "../skolaonline-ical" }
+thiserror = "1.0.37"
+tokio = { version = "1.21.2", features = ["full"] }
+tracing = "0.1.37"
+tracing-subscriber = "0.3.16"
