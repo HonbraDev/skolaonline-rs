@@ -1,17 +1,17 @@
 [package]
-name = "skolaonline-ical"
+name = "skolaonline-ical-static"
 authors = ["Honbra <honbra@honbra.com>"]
-description = "An iCal generator for Škola OnLine"
+description = "Uses skolaonline-ical to generate a calendar file"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+chrono = "0.4.23"
 anyhow = "1.0.66"
-chrono = { version = "0.4.23", features = ["serde"] }
-chrono-tz = "0.8.0"
-icalendar = "0.13.3"
+base64 = "0.13.1"
 skolaonline = { version = "0.1.0", path = "../skolaonline" }
-thiserror = "1.0.38"
+skolaonline-ical = { version = "0.1.0", path = "../skolaonline-ical" }
 tokio = { version = "1.21.2", features = ["full"] }
+clap = { version = "4.0.29", features = ["derive"] }

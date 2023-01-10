@@ -3,6 +3,7 @@ use chrono::{NaiveDate, TimeZone, Utc};
 use chrono_tz::Tz;
 use icalendar::{Calendar, CalendarDateTime, Component, Event};
 use skolaonline::{RozvrhovaUdalost, SOClient};
+use thiserror::Error;
 
 const TZ: Tz = chrono_tz::Europe::Prague;
 
@@ -11,11 +12,27 @@ pub async fn fetch_calendar(
     password: &str,
     start: NaiveDate,
     end: Option<NaiveDate>,
-) -> Result<Calendar> {
+) -> Result<Calendar, FetchCalendarError> {
     let client = SOClient::new(username, password);
+
+    if !client.get_auth_status().await? {
+        return Err(FetchCalendarError::Unauthorized);
+    }
+
     let events = client.get_events(start, end).await?;
+
     let calendar = convert_to_ical(events);
+
     Ok(calendar)
+}
+
+#[derive(Debug, Error)]
+pub enum FetchCalendarError {
+    #[error("Unauthorized")]
+    Unauthorized,
+
+    #[error(transparent)]
+    Other(#[from] anyhow::Error),
 }
 
 pub fn convert_to_ical(udalosti: Vec<RozvrhovaUdalost>) -> Calendar {

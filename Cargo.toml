@@ -3,4 +3,5 @@ members = [
     "skolaonline",
     "skolaonline-ical",
     "skolaonline-ical-aas",
+    "skolaonline-ical-static",
 ]
