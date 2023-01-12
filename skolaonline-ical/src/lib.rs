@@ -66,7 +66,7 @@ pub fn convert_event_to_ical(udalost: RozvrhovaUdalost) -> Event {
             .predmet
             .is_some()
             .then(|| udalost.predmet.unwrap().nazev)
-            .unwrap_or_else(|| udalost.nazev)
+            .unwrap_or(udalost.nazev)
             .as_str(),
     );
 
@@ -112,8 +112,7 @@ pub fn convert_event_to_ical(udalost: RozvrhovaUdalost) -> Event {
         udalost.poznamka,
     ]
     .into_iter()
-    .filter(|s| s.is_some())
-    .map(|s| s.unwrap())
+    .flatten()
     .filter(|s| !s.is_empty())
     .collect::<Vec<String>>()
     .join("\n");

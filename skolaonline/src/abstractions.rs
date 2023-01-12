@@ -25,8 +25,8 @@ impl SOClient {
         end: Option<NaiveDate>,
     ) -> Result<Vec<RozvrhovaUdalost>> {
         let end = end.unwrap_or(start);
-        let start = start.format(&DATE_FORMAT).to_string();
-        let end = end.format(&DATE_FORMAT).to_string();
+        let start = start.format(DATE_FORMAT).to_string();
+        let end = end.format(DATE_FORMAT).to_string();
 
         let resp: RozvrhoveUdalostiResponse = self
             .get(&format!("/RozvrhoveUdalosti/{start}/{end}"))
