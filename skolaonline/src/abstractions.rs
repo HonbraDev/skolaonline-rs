@@ -1,7 +1,5 @@
-use std::collections::HashMap;
-
-use anyhow::Result;
 use chrono::NaiveDate;
+use std::collections::HashMap;
 
 use crate::{
     client::SOClient,
@@ -23,7 +21,7 @@ impl SOClient {
     }
 
     /// Gets the user's profile
-    pub async fn get_user_info(&self, username: Option<&str>) -> Result<UzivatelInfo> {
+    pub async fn get_user_info(&self, username: Option<&str>) -> SOResult<UzivatelInfo> {
         let username = username.unwrap_or(&self.username);
         Ok(self.get(&format!("/UzivatelInfo/{username}")).await?)
     }
@@ -33,25 +31,26 @@ impl SOClient {
         &self,
         start: NaiveDate,
         end: Option<NaiveDate>,
-    ) -> Result<Vec<RozvrhovaUdalost>> {
+    ) -> SOResult<Vec<RozvrhovaUdalost>> {
         let end = end.unwrap_or(start);
         let start = start.format(DATE_FORMAT).to_string();
         let end = end.format(DATE_FORMAT).to_string();
 
-        let resp: RozvrhoveUdalostiResponse = self
-            .get(&format!("/RozvrhoveUdalosti/{start}/{end}"))
-            .await?;
+        let udalosti = self
+            .get::<RozvrhoveUdalostiResponse>(&format!("/RozvrhoveUdalosti/{start}/{end}"))
+            .await?
+            .udalosti;
 
-        Ok(resp.udalosti)
+        Ok(udalosti)
     }
 
     /// Get the user's grades
-    pub async fn get_grades(&self) -> Result<VypisHodnoceniStudentResponse> {
+    pub async fn get_grades(&self) -> SOResult<VypisHodnoceniStudentResponse> {
         Ok(self.get("/VypisHodnoceniStudent").await?)
     }
 
     /// Get all the subjects in the user's school
-    pub async fn get_subjects(&self) -> Result<HashMap<String, Predmet>> {
+    pub async fn get_subjects(&self) -> SOResult<HashMap<String, Predmet>> {
         let subjects = self
             .get::<Vec<Predmet>>("/Predmety")
             .await?
@@ -63,7 +62,7 @@ impl SOClient {
     }
 
     /// Get all the grade types in the user's school
-    pub async fn get_grade_types(&self) -> Result<HashMap<String, DruhHodnoceni>> {
+    pub async fn get_grade_types(&self) -> SOResult<HashMap<String, DruhHodnoceni>> {
         let grade_types = self
             .get::<Vec<DruhHodnoceni>>("/DruhyHodnoceni")
             .await?
