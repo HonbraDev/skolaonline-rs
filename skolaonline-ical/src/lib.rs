@@ -2,7 +2,7 @@ use anyhow::Result;
 use chrono::{NaiveDate, TimeZone, Utc};
 use chrono_tz::Tz;
 use icalendar::{Calendar, CalendarDateTime, Component, Event};
-use skolaonline::{RozvrhovaUdalost, SOClient};
+use skolaonline::{models::rozvrh::RozvrhovaUdalost, client::SOClient};
 use thiserror::Error;
 
 const TZ: Tz = chrono_tz::Europe::Prague;

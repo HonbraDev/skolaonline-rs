@@ -1,8 +1,17 @@
+use std::collections::HashMap;
+
 use anyhow::Result;
 use chrono::NaiveDate;
 
-use crate::client::SOClient;
-use crate::types::*;
+use crate::{
+    client::SOClient,
+    models::{
+        hodnoceni::{DruhHodnoceni, VypisHodnoceniStudentResponse},
+        predmet::Predmet,
+        rozvrh::{RozvrhovaUdalost, RozvrhoveUdalostiResponse},
+        uzivatel_info::UzivatelInfo,
+    },
+};
 
 const DATE_FORMAT: &str = "%Y-%m-%d";
 
@@ -34,5 +43,36 @@ impl SOClient {
             .data;
 
         Ok(resp.udalosti)
+    }
+
+    /// Get the user's grades
+    pub async fn get_grades(&self) -> Result<VypisHodnoceniStudentResponse> {
+        Ok(self.get("/VypisHodnoceniStudent").await?.data)
+    }
+
+    /// Get all the subjects in the user's school
+    pub async fn get_subjects(&self) -> Result<HashMap<String, Predmet>> {
+        let subjects = self
+            .get::<Vec<Predmet>>("/Predmety")
+            .await?
+            .data
+            .into_iter()
+            .map(|subject| (subject.predmet_id.clone(), subject))
+            .collect();
+
+        Ok(subjects)
+    }
+
+    /// Get all the grade types in the user's school
+    pub async fn get_grade_types(&self) -> Result<HashMap<String, DruhHodnoceni>> {
+        let grade_types = self
+            .get::<Vec<DruhHodnoceni>>("/DruhyHodnoceni")
+            .await?
+            .data
+            .into_iter()
+            .map(|grade_type| (grade_type.druh_hodnoceni_id.clone(), grade_type))
+            .collect();
+
+        Ok(grade_types)
     }
 }

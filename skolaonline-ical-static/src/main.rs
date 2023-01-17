@@ -1,3 +1,4 @@
+use anyhow::Result;
 use chrono::{Duration, Local};
 use clap::Parser;
 use std::path::PathBuf;
@@ -9,12 +10,12 @@ struct Cli {
     password: String,
     #[clap(short, long, default_value = "./calendar.ics")]
     output: PathBuf,
-    // date_from: chrono::NaiveDate,
-    // date_to: chrono::NaiveDate,
+    // date_from: Option<NaiveDate>,
+    // date_to: Option<NaiveDate>,
 }
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> Result<()> {
     let args = Cli::parse();
 
     let today = Local::now().date_naive();

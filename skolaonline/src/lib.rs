@@ -1,8 +1,4 @@
-mod client;
-mod response;
-mod types;
-
 pub mod abstractions;
-pub use client::SOClient;
-pub use response::APIResponse;
-pub use types::*;
+pub mod client;
+pub mod models;
+pub mod response;

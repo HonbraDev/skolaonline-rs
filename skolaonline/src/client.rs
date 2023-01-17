@@ -1,9 +1,11 @@
-use crate::response::APIResponse;
 use anyhow::{anyhow, Result};
+use http::header::AUTHORIZATION;
 use reqwest::{
-    header::{HeaderMap, HeaderName, HeaderValue},
+    header::{HeaderMap, HeaderValue},
     Client,
 };
+
+use crate::response::APIResponse;
 
 /// A client for the Škola OnLine API
 pub struct SOClient {
@@ -13,13 +15,17 @@ pub struct SOClient {
 }
 
 fn basic_auth(username: &str, password: &str) -> HeaderMap {
-    HeaderMap::from_iter([(HeaderName::from_static("authorization"), {
+    [(
+        AUTHORIZATION,
         HeaderValue::try_from(format!(
             "Basic {}",
             base64::encode(format!("{username}:{password}"))
         ))
-        .unwrap()
-    })])
+        .expect("a base64-encoded string is always valid UTF-8"),
+    )]
+    .iter()
+    .cloned()
+    .collect()
 }
 
 impl SOClient {
@@ -34,6 +40,7 @@ impl SOClient {
             .user_agent("Samsung Smart Fridge <honbra@honbra.com>")
             .build()
             .unwrap();
+
         Self {
             http_client: client,
             base_path: "https://aplikace.skolaonline.cz/SOLWebApi/api/v1",
@@ -74,7 +81,7 @@ impl SOClient {
     fn get_url(&self, path: &str) -> String {
         format!("{}{path}", self.base_path)
     }
-    
+
     /// Executes a GET request to the given path and returns the response
     pub async fn get<T>(&self, url: &str) -> Result<APIResponse<T>>
     where

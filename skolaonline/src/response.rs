@@ -1,13 +1,13 @@
-use serde_derive::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct APIResponse<T>{
+pub struct APIResponse<T> {
     pub status: APIResponseStatus,
     pub data: T,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct APIResponseStatus {
     pub code: String,

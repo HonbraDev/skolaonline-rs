@@ -1,25 +1,8 @@
-/*
- * "Fuck this, I'm just gonna autogenerate the types"
- * ~ Honbra, 2022
- */
-
-use chrono::*;
-use serde_derive::{Deserialize, Serialize};
+use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub struct UzivatelInfo {
-    pub database_id: String,
-    pub organizace_id: String,
-    pub osoba_id: String,
-    pub uzivatel_id: String,
-    pub uziv_jmeno: String,
-    pub kategorie_id_csv: String,
-    pub jmeno: String,
-    pub trida_id: String,
-    pub trida_nazev: String,
-}
+use crate::models::predmet::Predmet;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -77,17 +60,6 @@ pub struct DruhUdalosti {
     pub druh_udalosti_id: String,
     pub nazev: String,
     pub popis: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub struct Predmet {
-    pub skolni_rok_id: Value, // wtf
-    pub predmet_id: String,
-    pub zkratka: String,
-    pub nazev: String,
-    pub priznak_druh_predmetu: String,
-    pub poradi_zobrazeni: Value, // again, wtf
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
