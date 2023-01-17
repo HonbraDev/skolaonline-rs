@@ -2,8 +2,10 @@ use anyhow::Result;
 use chrono::{NaiveDate, TimeZone, Utc};
 use chrono_tz::Tz;
 use icalendar::{Calendar, CalendarDateTime, Component, Event};
-use skolaonline::{models::rozvrh::RozvrhovaUdalost, client::SOClient};
+use skolaonline::{client::SOClient, models::rozvrh::RozvrhovaUdalost};
 use thiserror::Error;
+
+pub use skolaonline::result::{SOError, SOResult};
 
 const TZ: Tz = chrono_tz::Europe::Prague;
 
@@ -30,6 +32,9 @@ pub async fn fetch_calendar(
 pub enum FetchCalendarError {
     #[error("Unauthorized")]
     Unauthorized,
+
+    #[error("Failed to fetch events")]
+    SOError(#[from] SOError),
 
     #[error(transparent)]
     Other(#[from] anyhow::Error),

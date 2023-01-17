@@ -11,20 +11,21 @@ use crate::{
         rozvrh::{RozvrhovaUdalost, RozvrhoveUdalostiResponse},
         uzivatel_info::UzivatelInfo,
     },
+    result::SOResult,
 };
 
 const DATE_FORMAT: &str = "%Y-%m-%d";
 
 impl SOClient {
     /// Checks if the user's credentials are valid
-    pub async fn get_auth_status(&self) -> Result<bool> {
-        Ok(self.get("/AuthorizationStatus").await?.data)
+    pub async fn get_auth_status(&self) -> SOResult<bool> {
+        Ok(self.get("/AuthorizationStatus").await?)
     }
 
     /// Gets the user's profile
     pub async fn get_user_info(&self, username: Option<&str>) -> Result<UzivatelInfo> {
         let username = username.unwrap_or(&self.username);
-        Ok(self.get(&format!("/UzivatelInfo/{username}")).await?.data)
+        Ok(self.get(&format!("/UzivatelInfo/{username}")).await?)
     }
 
     /// Get the user's events in the given date range
@@ -39,15 +40,14 @@ impl SOClient {
 
         let resp: RozvrhoveUdalostiResponse = self
             .get(&format!("/RozvrhoveUdalosti/{start}/{end}"))
-            .await?
-            .data;
+            .await?;
 
         Ok(resp.udalosti)
     }
 
     /// Get the user's grades
     pub async fn get_grades(&self) -> Result<VypisHodnoceniStudentResponse> {
-        Ok(self.get("/VypisHodnoceniStudent").await?.data)
+        Ok(self.get("/VypisHodnoceniStudent").await?)
     }
 
     /// Get all the subjects in the user's school
@@ -55,7 +55,6 @@ impl SOClient {
         let subjects = self
             .get::<Vec<Predmet>>("/Predmety")
             .await?
-            .data
             .into_iter()
             .map(|subject| (subject.predmet_id.clone(), subject))
             .collect();
@@ -68,7 +67,6 @@ impl SOClient {
         let grade_types = self
             .get::<Vec<DruhHodnoceni>>("/DruhyHodnoceni")
             .await?
-            .data
             .into_iter()
             .map(|grade_type| (grade_type.druh_hodnoceni_id.clone(), grade_type))
             .collect();

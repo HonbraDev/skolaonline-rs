@@ -3,7 +3,7 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use axum_auth::AuthBasic;
-use skolaonline_ical::{fetch_calendar, FetchCalendarError};
+use skolaonline_ical::{fetch_calendar, FetchCalendarError, SOError};
 use thiserror::Error;
 
 pub async fn calendar(
@@ -71,6 +71,16 @@ impl From<FetchCalendarError> for CalendarError {
     fn from(value: FetchCalendarError) -> Self {
         match value {
             FetchCalendarError::Unauthorized => CalendarError::InvalidCredentials,
+            FetchCalendarError::SOError(err) => match err {
+                SOError::BadStatus(status) => {
+                    if status == 401 {
+                        CalendarError::InvalidCredentials
+                    } else {
+                        CalendarError::OtherFetchError(err.into())
+                    }
+                }
+                _ => CalendarError::OtherFetchError(err.into()),
+            },
             FetchCalendarError::Other(err) => CalendarError::OtherFetchError(err),
         }
     }

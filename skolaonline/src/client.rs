@@ -1,11 +1,13 @@
-use anyhow::{anyhow, Result};
 use http::header::AUTHORIZATION;
 use reqwest::{
     header::{HeaderMap, HeaderValue},
     Client,
 };
 
-use crate::response::APIResponse;
+use crate::{
+    response::APIResponse,
+    result::{SOError, SOResult},
+};
 
 /// A client for the Škola OnLine API
 pub struct SOClient {
@@ -15,17 +17,13 @@ pub struct SOClient {
 }
 
 fn basic_auth(username: &str, password: &str) -> HeaderMap {
-    [(
-        AUTHORIZATION,
-        HeaderValue::try_from(format!(
-            "Basic {}",
-            base64::encode(format!("{username}:{password}"))
-        ))
-        .expect("a base64-encoded string is always valid UTF-8"),
-    )]
-    .iter()
-    .cloned()
-    .collect()
+    let mut headers = HeaderMap::new();
+    let auth = format!("Basic {}", base64::encode(format!("{username}:{password}")));
+    let auth = HeaderValue::from_str(&auth).unwrap();
+
+    headers.insert(AUTHORIZATION, auth);
+
+    headers
 }
 
 impl SOClient {
@@ -49,28 +47,28 @@ impl SOClient {
     }
 }
 
-/// Handles the raw response and converts it into `APIResponse<T>`
-async fn handle_response<T>(response: reqwest::Response) -> Result<APIResponse<T>>
+/// Handles the raw response and converts it into a `SOResult<T>`
+async fn handle_response<T>(response: reqwest::Response) -> SOResult<T>
 where
     T: serde::de::DeserializeOwned,
 {
     let status = response.status();
     let is_success = status.is_success();
-    let response = response.json().await;
+    let response = response.json::<APIResponse<T>>().await;
 
     match response {
         Ok(response) => {
             if is_success {
-                Ok(response)
+                Ok(response.data)
             } else {
-                Err(anyhow!(response.status.message))
+                Err(SOError::Status(response.status))
             }
         }
         Err(e) => {
             if is_success {
-                Err(anyhow!("response was not valid JSON: {}", e))
+                Err(SOError::Decode(e))
             } else {
-                Err(anyhow!("request failed with status {status}"))
+                Err(SOError::BadStatus(status.as_u16()))
             }
         }
     }
@@ -83,7 +81,7 @@ impl SOClient {
     }
 
     /// Executes a GET request to the given path and returns the response
-    pub async fn get<T>(&self, url: &str) -> Result<APIResponse<T>>
+    pub async fn get<T>(&self, url: &str) -> SOResult<T>
     where
         T: serde::de::DeserializeOwned,
     {
@@ -93,7 +91,7 @@ impl SOClient {
     }
 
     /// Executes a POST request to the given path and returns the response
-    pub async fn post<T, B>(&self, url: &str, body: Option<B>) -> Result<APIResponse<T>>
+    pub async fn post<T, B>(&self, url: &str, body: Option<B>) -> SOResult<T>
     where
         T: serde::de::DeserializeOwned,
         B: serde::Serialize,
