@@ -16,13 +16,13 @@ const DATE_FORMAT: &str = "%Y-%m-%d";
 impl SOClient {
     /// Checks if the user's credentials are valid
     pub async fn get_auth_status(&self) -> SOResult<bool> {
-        Ok(self.get("/AuthorizationStatus").await?)
+        self.get("/AuthorizationStatus").await
     }
 
     /// Gets the user's profile
     pub async fn get_user_info(&self, username: Option<&str>) -> SOResult<UzivatelInfo> {
         let username = username.unwrap_or(&self.username);
-        Ok(self.get(&format!("/UzivatelInfo/{username}")).await?)
+        self.get(&format!("/UzivatelInfo/{username}")).await
     }
 
     /// Get the user's events in the given date range
@@ -45,7 +45,7 @@ impl SOClient {
 
     /// Get the user's grades
     pub async fn get_grades(&self) -> SOResult<VypisHodnoceniStudentResponse> {
-        Ok(self.get("/VypisHodnoceniStudent").await?)
+        self.get("/VypisHodnoceniStudent").await
     }
 
     /// Get all the subjects in the user's school
