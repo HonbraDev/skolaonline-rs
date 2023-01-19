@@ -2,14 +2,13 @@ use chrono::NaiveDate;
 use std::collections::HashMap;
 
 use crate::{
-    client::SOClient,
     models::{
         hodnoceni::{DruhHodnoceni, VypisHodnoceniStudentResponse},
         predmet::Predmet,
         rozvrh::{RozvrhovaUdalost, RozvrhoveUdalostiResponse},
         uzivatel_info::UzivatelInfo,
     },
-    result::SOResult,
+    SOClient, SOResult,
 };
 
 const DATE_FORMAT: &str = "%Y-%m-%d";

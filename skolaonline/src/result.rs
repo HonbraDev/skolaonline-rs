@@ -1,5 +1,6 @@
-use crate::response::APIResponseStatus;
 use thiserror::Error;
+
+use crate::response::APIResponseStatus;
 
 pub type SOResult<T> = Result<T, SOError>;
 

@@ -1,5 +1,9 @@
-pub mod abstractions;
-pub mod client;
+mod abstractions;
+mod client;
 pub mod models;
-pub mod response;
-pub mod result;
+mod response;
+mod result;
+
+pub use client::SOClient;
+pub use response::*;
+pub use result::*;

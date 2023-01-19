@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 use comfy_table::Table;
-use skolaonline::client::SOClient;
+use skolaonline::SOClient;
 use std::collections::HashMap;
 
 #[derive(Debug, clap::Parser)]

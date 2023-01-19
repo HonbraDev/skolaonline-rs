@@ -2,10 +2,10 @@ use anyhow::Result;
 use chrono::{NaiveDate, TimeZone, Utc};
 use chrono_tz::Tz;
 use icalendar::{Calendar, CalendarDateTime, Component, Event};
-use skolaonline::{client::SOClient, models::rozvrh::RozvrhovaUdalost};
+use skolaonline::{models::rozvrh::RozvrhovaUdalost, SOClient};
 use thiserror::Error;
 
-pub use skolaonline::result::{SOError, SOResult};
+pub use skolaonline::{SOError, SOResult};
 
 const TZ: Tz = chrono_tz::Europe::Prague;
 
