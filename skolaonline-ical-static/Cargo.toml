@@ -8,10 +8,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0.66"
-base64 = "0.13.1"
+anyhow = "1.0.68"
+base64 = "0.21.0"
 chrono = "0.4.23"
-clap = { version = "4.0.29", features = ["derive"] }
+clap = { version = "4.1.1", features = ["derive"] }
 skolaonline = { version = "0.1.0", path = "../skolaonline" }
 skolaonline-ical = { version = "0.1.0", path = "../skolaonline-ical" }
-tokio = { version = "1.21.2", features = ["full"] }
+tokio = { version = "1.24.2", features = ["full"] }

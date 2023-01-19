@@ -1,3 +1,4 @@
+use base64::prelude::{Engine as _, BASE64_STANDARD};
 use http::header::AUTHORIZATION;
 use reqwest::{
     header::{HeaderMap, HeaderValue},
@@ -18,7 +19,8 @@ pub struct SOClient {
 
 fn basic_auth(username: &str, password: &str) -> HeaderMap {
     let mut headers = HeaderMap::new();
-    let auth = format!("Basic {}", base64::encode(format!("{username}:{password}")));
+    let auth = BASE64_STANDARD.encode(format!("{username}:{password}"));
+    let auth = format!("Basic {auth}",);
     let auth = HeaderValue::from_str(&auth).unwrap();
 
     headers.insert(AUTHORIZATION, auth);

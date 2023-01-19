@@ -1,6 +1,7 @@
 use anyhow::Result;
 use chrono::{NaiveDate, TimeZone, Utc};
 use chrono_tz::Tz;
+use icalendar::EventLike;
 use icalendar::{Calendar, CalendarDateTime, Component, Event};
 use skolaonline::{models::rozvrh::RozvrhovaUdalost, SOClient};
 use thiserror::Error;
@@ -126,4 +127,24 @@ pub fn convert_event_to_ical(udalost: RozvrhovaUdalost) -> Event {
     }
 
     eve
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_convert_event_to_ical() {
+        let udalost = RozvrhovaUdalost {
+            ..Default::default()
+        };
+
+        println!("{udalost:#?}");
+
+        let ical = convert_event_to_ical(udalost);
+
+        println!("{ical:#?}");
+
+        assert_eq!(1, 1);
+    }
 }
