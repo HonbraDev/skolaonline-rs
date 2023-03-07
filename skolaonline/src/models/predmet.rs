@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::hash::{Hash, Hasher};
+
+use crate::hash::hash_serde_json_value;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -12,4 +15,15 @@ pub struct Predmet {
     pub nazev: String,
     pub priznak_druh_predmetu: Option<String>,
     pub poradi_zobrazeni: Value,
+}
+
+impl Hash for Predmet {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.skolni_rok_id.hash(state);
+        self.predmet_id.hash(state);
+        self.zkratka.hash(state);
+        self.nazev.hash(state);
+        self.priznak_druh_predmetu.hash(state);
+        hash_serde_json_value(&self.poradi_zobrazeni, state);
+    }
 }
