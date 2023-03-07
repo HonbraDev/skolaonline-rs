@@ -19,9 +19,10 @@ pub struct SOClient {
 
 fn basic_auth(username: &str, password: &str) -> HeaderMap {
     let mut headers = HeaderMap::new();
+
     let auth = BASE64_STANDARD.encode(format!("{username}:{password}"));
-    let auth = format!("Basic {auth}",);
-    let auth = HeaderValue::from_str(&auth).unwrap();
+    let auth = format!("Basic {auth}");
+    let auth = HeaderValue::from_str(&auth).expect("Base64 should be a valid header value");
 
     headers.insert(AUTHORIZATION, auth);
 

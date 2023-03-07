@@ -1,7 +1,8 @@
+use std::path::PathBuf;
+
 use anyhow::Result;
 use chrono::{Duration, Local};
 use clap::Parser;
-use std::path::PathBuf;
 use tokio::{fs::File, io::AsyncWriteExt};
 
 #[derive(Debug, clap::Parser)]

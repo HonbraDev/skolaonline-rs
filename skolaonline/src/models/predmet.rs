@@ -1,6 +1,7 @@
+use std::hash::{Hash, Hasher};
+
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::hash::{Hash, Hasher};
 
 use crate::hash::hash_serde_json_value;
 

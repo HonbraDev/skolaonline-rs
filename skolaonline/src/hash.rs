@@ -1,5 +1,6 @@
-use serde_json::Value;
 use std::hash::{Hash, Hasher};
+
+use serde_json::Value;
 
 pub fn hash_f64<H: Hasher>(f: &f64, state: &mut H) {
     f.to_bits().hash(state);

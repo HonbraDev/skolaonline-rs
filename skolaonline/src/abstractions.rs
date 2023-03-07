@@ -1,5 +1,6 @@
-use chrono::NaiveDate;
 use std::collections::HashMap;
+
+use chrono::NaiveDate;
 
 use crate::{
     models::{

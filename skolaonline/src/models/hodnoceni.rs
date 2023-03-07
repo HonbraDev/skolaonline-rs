@@ -1,5 +1,6 @@
-use serde::{Deserialize, Serialize};
 use std::hash::{Hash, Hasher};
+
+use serde::{Deserialize, Serialize};
 
 use crate::hash::{hash_f64, hash_opt_f64};
 

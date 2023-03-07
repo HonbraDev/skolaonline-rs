@@ -1,36 +1,31 @@
-use axum::{
-    http::StatusCode,
-    response::{IntoResponse, Response},
+use std::io::Cursor;
+
+use rocket::{
+    http::Status,
+    response::{self, Responder},
+    Request, Response,
 };
-use std::fmt::Display;
+use skolaonline_ical::FetchCalendarError;
+use skolaonline_util::BasicAuthDecodeError;
+use thiserror::Error;
 
-#[derive(Debug)]
-pub struct AppError(pub anyhow::Error);
+#[derive(Debug, Error)]
+pub enum CalendarEndpointError {
+    #[error("Failed to parse auth string: {0}")]
+    FailedToParseAuth(#[from] BasicAuthDecodeError),
 
-impl Display for AppError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        self.0.fmt(f)
-    }
+    #[error("Failed to fetch the calendar: {0}")]
+    FetchCalendar(#[from] FetchCalendarError),
 }
 
-// Tell axum how to convert `AppError` into a response.
-impl IntoResponse for AppError {
-    fn into_response(self) -> Response {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Internal server error: {}", self.0),
-        )
-            .into_response()
-    }
-}
-
-// This enables using `?` on functions that return `Result<_, anyhow::Error>` to turn them into
-// `Result<_, AppError>`. That way you don't need to do that manually.
-impl<E> From<E> for AppError
-where
-    E: Into<anyhow::Error>,
-{
-    fn from(err: E) -> Self {
-        Self(err.into())
+impl<'r, 'o: 'r> Responder<'r, 'o> for CalendarEndpointError {
+    fn respond_to(self, _req: &'r Request<'_>) -> response::Result<'o> {
+        let status = match self {
+            _ => Status::InternalServerError,
+        };
+        Response::build()
+            .status(status)
+            .streamed_body(Cursor::new(self.to_string()))
+            .ok()
     }
 }

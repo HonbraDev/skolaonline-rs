@@ -4,5 +4,5 @@ members = [
     "skolaonline-ical",
     "skolaonline-ical-aas",
     "skolaonline-ical-static",
-    "skolaonline-grade-guard",
+    "skolaonline-util",
 ]

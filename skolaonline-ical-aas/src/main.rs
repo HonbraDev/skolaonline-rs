@@ -1,26 +1,25 @@
-use axum::{routing::get, Router};
-use std::net::SocketAddr;
-use tower_http::trace::{self, TraceLayer};
 mod endpoint;
 mod error;
-use tracing::Level;
 
-#[tokio::main]
-async fn main() {
-    tracing_subscriber::fmt::init();
+#[macro_use]
+extern crate rocket;
 
-    let app = Router::new()
-        .route("/calendar/v2", get(endpoint::calendar))
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(trace::DefaultMakeSpan::new().level(Level::INFO))
-                .on_response(trace::DefaultOnResponse::new().level(Level::INFO)),
-        );
+#[catch(404)]
+fn not_found() -> &'static str {
+    "The requested resource was not found."
+}
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    tracing::info!("Listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+#[launch]
+fn rocket() -> _ {
+    rocket::build()
+        .mount(
+            "/",
+            routes![
+                endpoint::index,
+                endpoint::calendar,
+                endpoint::calendar_browser,
+                endpoint::calendar_not_acceptable,
+            ],
+        )
+        .register("/", catchers![not_found])
 }

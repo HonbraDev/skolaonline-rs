@@ -1,87 +1,49 @@
-use axum::{
-    http::StatusCode,
-    response::{IntoResponse, Response},
+use chrono::{Duration, Local};
+use rocket::{
+    form::FromForm,
+    http::Status,
+    response::{status, Redirect},
 };
-use axum_auth::AuthBasic;
-use skolaonline_ical::{fetch_calendar, FetchCalendarError, SOError};
-use thiserror::Error;
+use skolaonline_util::basic_auth_decode;
 
-pub async fn calendar(
-    AuthBasic((username, password)): AuthBasic,
-) -> Result<Response<String>, CalendarError> {
-    match password {
-        Some(password) => {
-            if password.is_empty() {
-                return Err(CalendarError::NoCredentials);
-            }
+use crate::error::CalendarEndpointError;
 
-            let today = chrono::Local::now().date_naive();
-            let from = today - chrono::Duration::days(7);
-            let to = today + chrono::Duration::days(30);
-
-            let calendar = fetch_calendar(&username, &password, from, Some(to)).await?;
-
-            let response = Response::builder()
-                .status(StatusCode::OK)
-                .header("Content-Type", "text/calendar")
-                .body(calendar.to_string())
-                .unwrap();
-
-            Ok(response)
-        }
-        None => Err(CalendarError::NoCredentials),
-    }
+#[get("/")]
+pub fn index() -> status::Custom<&'static str> {
+    status::Custom(Status::ImATeapot, "hello your computer has virus")
 }
 
-#[derive(Debug, Error)]
-pub enum CalendarError {
-    #[error("No credentials supplied")]
-    NoCredentials,
+#[derive(Debug, FromForm)]
+pub struct Args {
+    auth: String,
 
-    #[error("Invalid credentials")]
-    InvalidCredentials,
+    #[field(default = 7)]
+    days_back: u8,
 
-    #[error("Calendar error: {0}")]
-    OtherFetchError(anyhow::Error),
+    #[field(default = 28)]
+    days_forward: u8,
 }
 
-impl IntoResponse for CalendarError {
-    fn into_response(self) -> Response {
-        match self {
-            CalendarError::NoCredentials => (
-                StatusCode::UNAUTHORIZED,
-                "Please provide your credentials using the HTTP Authorization header.\nMore information: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization#basic",
-            )
-                .into_response(),
+#[get("/calendar/v2?<args..>", format = "text/calendar", rank = 1)]
+pub async fn calendar(args: Args) -> Result<String, CalendarEndpointError> {
+    let (username, password) = basic_auth_decode(&args.auth)?;
 
-            CalendarError::InvalidCredentials => {
-                (StatusCode::UNAUTHORIZED, "The remote server has rejected your credentials. Please check that they're valid.").into_response()
-            }
+    let today = Local::now().date_naive();
+    let date_from = today - Duration::days(args.days_back.into());
+    let date_to = today + Duration::days(args.days_forward.into());
 
-            CalendarError::OtherFetchError(err) => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                format!("An error has occured while fetching the calendar. More information can be found below:\n{err}"),
-            )
-                .into_response(),
-        }
-    }
+    let calendar =
+        skolaonline_ical::fetch_calendar(&username, &password, date_from, Some(date_to)).await?;
+
+    Ok(calendar.to_string())
 }
 
-impl From<FetchCalendarError> for CalendarError {
-    fn from(value: FetchCalendarError) -> Self {
-        match value {
-            FetchCalendarError::Unauthorized => CalendarError::InvalidCredentials,
-            FetchCalendarError::SOError(err) => match err {
-                SOError::BadStatus(status) => {
-                    if status == 401 {
-                        CalendarError::InvalidCredentials
-                    } else {
-                        CalendarError::OtherFetchError(err.into())
-                    }
-                }
-                _ => CalendarError::OtherFetchError(err.into()),
-            },
-            FetchCalendarError::Other(err) => CalendarError::OtherFetchError(err),
-        }
-    }
+#[get("/calendar/v2", format = "text/html", rank = 3)]
+pub fn calendar_browser() -> &'static str {
+    "Sorry, you need a calendar client to view the calendar."
+}
+
+#[get("/calendar/v2", rank = 4)]
+pub fn calendar_not_acceptable() -> Redirect {
+    Redirect::to(uri!("https://http.cat/406"))
 }
