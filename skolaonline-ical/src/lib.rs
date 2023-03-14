@@ -1,6 +1,6 @@
-use anyhow::Result;
 use chrono::{NaiveDate, TimeZone, Utc};
 use chrono_tz::Tz;
+pub use icalendar;
 use icalendar::{Calendar, CalendarDateTime, Component, Event, EventLike};
 use skolaonline::{models::rozvrh::RozvrhovaUdalost, SOClient};
 pub use skolaonline::{SOError, SOResult};
@@ -34,9 +34,6 @@ pub enum FetchCalendarError {
 
     #[error("Failed to fetch events")]
     SOError(#[from] SOError),
-
-    #[error(transparent)]
-    Other(#[from] anyhow::Error),
 }
 
 pub fn convert_to_ical(udalosti: Vec<RozvrhovaUdalost>) -> Calendar {

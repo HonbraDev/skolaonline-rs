@@ -1,10 +1,6 @@
-use std::hash::{Hash, Hasher};
-
 use serde::{Deserialize, Serialize};
 
-use crate::hash::{hash_f64, hash_opt_f64};
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct VypisHodnoceniStudentResponse {
     pub obdobi: VypisHodnoceniStudentResponseObdobi,
@@ -12,7 +8,7 @@ pub struct VypisHodnoceniStudentResponse {
 }
 
 /// Naming things is hard
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub struct VypisHodnoceniStudentResponseObdobi {
     pub datum_od: String, // NaiveDateTime,
@@ -44,31 +40,6 @@ pub struct Hodnoceni {
     pub znamka: Option<f64>,
 }
 
-impl Hash for Hodnoceni {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.udalost_id.hash(state);
-        self.student_id.hash(state);
-        self.skolni_rok_id.hash(state);
-        self.skolni_rok_nazev.hash(state);
-        self.pololeti_id.hash(state);
-        self.pololeti_nazev.hash(state);
-        self.datum.hash(state);
-        self.obdobi_dne_id.hash(state);
-        self.obdobi_dne_nazev.hash(state);
-        self.druh_hodnoceni_id.hash(state);
-        self.nazev.hash(state);
-        self.popis.hash(state);
-        self.predmet_id.hash(state);
-        self.ucitel_id.hash(state);
-        self.druh_vysledku.hash(state);
-        self.vysledek.hash(state);
-        self.vysledek_text.hash(state);
-        hash_opt_f64(&self.hodnoceni_max_bodu, state);
-        hash_opt_f64(&self.procenta, state);
-        hash_opt_f64(&self.znamka, state);
-    }
-}
-
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub struct DruhHodnoceni {
@@ -77,14 +48,4 @@ pub struct DruhHodnoceni {
     pub popis: Option<String>,
     pub vaha: f64,
     pub poradi_zobrazeni: i64,
-}
-
-impl Hash for DruhHodnoceni {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.druh_hodnoceni_id.hash(state);
-        self.nazev.hash(state);
-        self.popis.hash(state);
-        hash_f64(&self.vaha, state);
-        self.poradi_zobrazeni.hash(state);
-    }
 }

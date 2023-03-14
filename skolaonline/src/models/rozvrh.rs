@@ -1,10 +1,8 @@
-use std::hash::{Hash, Hasher};
-
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::{hash::hash_serde_json_value, models::predmet::Predmet};
+use super::predmet::Predmet;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -48,50 +46,14 @@ pub struct RozvrhovaUdalost {
     pub pocet_oducenych_hodin: Option<i32>,
 }
 
-impl Hash for RozvrhovaUdalost {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.udalost_id.hash(state);
-        self.datum.hash(state);
-        self.poradi.hash(state);
-        self.obdobi_dne_od_id.hash(state);
-        self.obdobi_dne_do_id.hash(state);
-        self.obdobi_dne_od_nazev.hash(state);
-        self.obdobi_dne_do_nazev.hash(state);
-        self.cas_od.hash(state);
-        self.cas_do.hash(state);
-        self.delka_pocet_hodin.hash(state);
-        self.nazev.hash(state);
-        self.popis.hash(state);
-        self.typ_udalosti.hash(state);
-        self.druh_udalosti.hash(state);
-        self.cyklus.hash(state);
-        self.predmet.hash(state);
-        self.barva.hash(state);
-        self.barva_pisma.hash(state);
-        self.povolen_zapis_dochazky.hash(state);
-        self.povolen_zapis_hodnoceni.hash(state);
-        self.skupiny_udalosti.hash(state);
-        hash_serde_json_value(&self.tridy_udalosti, state);
-        self.mistnosti_udalosti.hash(state);
-        self.ucitele_udalosti.hash(state);
-        self.poznamka.hash(state);
-        self.probrane_ucivo.hash(state);
-        self.nahrazuje_hodiny.hash(state);
-        self.je_suplovana_hodinami.hash(state);
-        self.nahrazuje_hodiny_text.hash(state);
-        self.je_suplovana_hodinami_text.hash(state);
-        self.pocet_oducenych_hodin.hash(state);
-    }
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub struct TypUdalosti {
     pub typ_udalosti_id: String,
     pub popis: String,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub struct DruhUdalosti {
     pub typ_udalosti_id: String,
@@ -100,7 +62,7 @@ pub struct DruhUdalosti {
     pub popis: String,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub struct SkupinaUdalosti {
     pub skupina_id: String,
@@ -111,7 +73,7 @@ pub struct SkupinaUdalosti {
     pub priznak_absence: bool,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub struct MistnostUdalosti {
     pub mistnost_id: String,
@@ -120,7 +82,7 @@ pub struct MistnostUdalosti {
     pub priznak_absence: bool,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub struct UcitelUdalosti {
     pub ucitel_id: String,

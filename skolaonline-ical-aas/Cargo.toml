@@ -1,17 +1,17 @@
 [package]
 name = "skolaonline-ical-aas"
+authors = ["Honbra <honbra@honbra.com>"]
+description = "Uses skolaonline-ical to generate a calendar file"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0.68"
-async-trait = "0.1.63"
-base64 = "0.21.0"
-chrono = "0.4.23"
-rocket = { version = "0.5.0-rc.2" }
+anyhow = "1.0.69"
+chrono = "0.4.24"
+clap = { version = "4.1.8", features = ["derive", "env"] }
+rocket = { version = "0.5.0-rc.2", default-features = false }
 skolaonline-ical = { version = "0.1.0", path = "../skolaonline-ical" }
 skolaonline-util = { version = "0.1.0", path = "../skolaonline-util" }
-thiserror = "1.0.38"
-tokio = { version = "1.24.2", features = ["full"] }
+thiserror = "1.0.39"

@@ -1,6 +1,5 @@
 mod abstractions;
 mod client;
-mod hash;
 pub mod models;
 mod response;
 mod result;

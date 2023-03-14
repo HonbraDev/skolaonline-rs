@@ -21,8 +21,10 @@ pub enum CalendarEndpointError {
 impl<'r, 'o: 'r> Responder<'r, 'o> for CalendarEndpointError {
     fn respond_to(self, _req: &'r Request<'_>) -> response::Result<'o> {
         let status = match self {
+            Self::FetchCalendar(FetchCalendarError::Unauthorized) => Status::InternalServerError,
             _ => Status::InternalServerError,
         };
+
         Response::build()
             .status(status)
             .streamed_body(Cursor::new(self.to_string()))
