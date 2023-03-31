@@ -12,6 +12,7 @@ anyhow = "1.0.69"
 chrono = "0.4.24"
 clap = { version = "4.1.8", features = ["derive", "env"] }
 rocket = { version = "0.5.0-rc.2", default-features = false }
+rocket-basicauth = "2.1.1"
 skolaonline-ical = { version = "0.1.0", path = "../skolaonline-ical" }
 skolaonline-util = { version = "0.1.0", path = "../skolaonline-util" }
 thiserror = "1.0.39"
