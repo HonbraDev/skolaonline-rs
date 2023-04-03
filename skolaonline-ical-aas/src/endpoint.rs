@@ -1,6 +1,7 @@
 use chrono::{Duration, Local};
 use rocket::{form::FromForm, http::Status, response::Redirect, Route};
 use rocket_basicauth::BasicAuth;
+use skolaonline_ical::CalendarConverterConfig;
 use skolaonline_util::basic_auth_decode;
 
 use crate::{calendar_response::CalendarResponse, error::CalendarEndpointError};
@@ -16,12 +17,30 @@ pub fn routes() -> Vec<Route> {
 
 #[derive(Debug, FromForm)]
 struct Args {
-    #[allow(clippy::needless_late_init)]
     #[field(default = 7)]
     days_back: u8,
 
     #[field(default = 28)]
     days_forward: u8,
+
+    #[field(default = false)]
+    teachers_as_attendees: bool,
+
+    #[field(default = false)]
+    groups_as_attendees: bool,
+
+    #[field(default = true)]
+    universal_description: bool,
+}
+
+impl From<Args> for CalendarConverterConfig {
+    fn from(value: Args) -> Self {
+        Self {
+            teachers_as_attendees: value.teachers_as_attendees,
+            groups_as_attendees: value.groups_as_attendees,
+            universal_description: value.universal_description,
+        }
+    }
 }
 
 #[get("/?<auth>&<args..>", format = "text/calendar", rank = 1)]
@@ -35,8 +54,14 @@ async fn calendar_query_auth(
     let date_from = today - Duration::days(args.days_back.into());
     let date_to = today + Duration::days(args.days_forward.into());
 
-    let calendar =
-        skolaonline_ical::fetch_calendar(&username, &password, date_from, Some(date_to)).await?;
+    let calendar = skolaonline_ical::fetch_calendar(
+        &username,
+        &password,
+        date_from,
+        Some(date_to),
+        &args.into(),
+    )
+    .await?;
 
     Ok(CalendarResponse(calendar))
 }
@@ -50,9 +75,14 @@ async fn calendar_header_auth(
     let date_from = today - Duration::days(args.days_back.into());
     let date_to = today + Duration::days(args.days_forward.into());
 
-    let calendar =
-        skolaonline_ical::fetch_calendar(&auth.username, &auth.password, date_from, Some(date_to))
-            .await?;
+    let calendar = skolaonline_ical::fetch_calendar(
+        &auth.username,
+        &auth.password,
+        date_from,
+        Some(date_to),
+        &args.into(),
+    )
+    .await?;
 
     Ok(CalendarResponse(calendar))
 }

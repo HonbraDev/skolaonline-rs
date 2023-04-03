@@ -11,10 +11,10 @@ edition = "2021"
 base64 = "0.21.0"
 chrono = { version = "0.4.24", features = ["serde"] }
 http = "0.2.9"
-reqwest = { version = "0.11.14", features = [
+reqwest = { version = "0.11.16", features = [
     "json",
     "rustls-tls",
 ], default-features = false }
-serde = { version = "1.0.156", features = ["derive"] }
-serde_json = "1.0.94"
-thiserror = "1.0.39"
+serde = { version = "1.0.159", features = ["derive"] }
+serde_json = "1.0.95"
+thiserror = "1.0.40"
