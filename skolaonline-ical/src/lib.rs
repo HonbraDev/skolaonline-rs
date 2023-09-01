@@ -17,9 +17,10 @@ pub async fn fetch_calendar(
 ) -> Result<Calendar, FetchCalendarError> {
     let client = SOClient::new(username, password);
 
-    if !client.get_auth_status().await? {
-        return Err(FetchCalendarError::Unauthorized);
-    }
+    // See #1
+    // if !client.get_auth_status().await? {
+    //     return Err(FetchCalendarError::Unauthorized);
+    // }
 
     let events = client.get_events(start, end).await?;
 
