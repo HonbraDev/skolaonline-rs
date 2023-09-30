@@ -1,8 +1,10 @@
 [workspace]
+resolver = "2"
 members = [
     "skolaonline",
     "skolaonline-ical",
     "skolaonline-ical-aas",
     "skolaonline-ical-static",
     "skolaonline-util",
+    "sors-solapi",
 ]
