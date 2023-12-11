@@ -23,30 +23,33 @@ pub enum BodyType {
 }
 
 impl Client {
-    pub async fn execute_request</* TReq, */ T>(
+    pub async fn execute_request<TReq, TRes>(
         &self,
         method: Method,
         url: Url,
         token: Option<&str>,
-        /* body: Option<(&TReq, BodyType)>, */
-    ) -> Result<T, Error>
+        body: Option<(&TReq, BodyType)>,
+    ) -> Result<TRes, Error>
     where
-        /* TReq: serde::Serialize + ?Sized, */
-        T: serde::de::DeserializeOwned,
+        TReq: serde::Serialize + ?Sized,
+        TRes: serde::de::DeserializeOwned,
     {
         let mut request = self.http_client.request(method, url);
         if let Some(token) = token {
             request = request.bearer_auth(token);
         }
-        /* if let Some((body, body_type)) = body {
+        if let Some((body, body_type)) = body {
             request = match body_type {
                 BodyType::Json => request.json(body),
                 BodyType::Form => request.form(body),
             }
-        } */
+        }
         let response = request.send().await?;
         if !response.status().is_success() {
-            return Err(Error::Status(response.status()));
+            let status = response.status();
+            let body = response.text().await?;
+            println!("{body}");
+            return Err(Error::Status(status));
         }
         Ok(response.json().await?)
     }
@@ -55,6 +58,20 @@ impl Client {
     where
         T: serde::de::DeserializeOwned,
     {
-        self.execute_request(Method::GET, url, token).await
+        self.execute_request::<(), T>(Method::GET, url, token, None)
+            .await
+    }
+
+    pub async fn post<TReq, TRes>(
+        &self,
+        url: Url,
+        token: Option<&str>,
+        body: Option<(&TReq, BodyType)>,
+    ) -> Result<TRes, Error>
+    where
+        TReq: serde::Serialize + ?Sized,
+        TRes: serde::de::DeserializeOwned,
+    {
+        self.execute_request(Method::POST, url, token, body).await
     }
 }

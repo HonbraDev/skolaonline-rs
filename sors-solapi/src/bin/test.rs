@@ -1,11 +1,11 @@
 use sors_solapi::{client::Client, error::Error};
 
-// This is ~20 KB in prod T_T
-const TOKEN: &str = "";
-
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     let client = Client::new("Samsung Smart Fridge <honbra@honbra.com>")?;
+
+    // This is ~20 KB in prod T_T
+    let token = client.sign_in("", "").await?.access_token;
 
     {
         let min_app_version = client.get_min_app_version().await?;
@@ -13,7 +13,7 @@ async fn main() -> Result<(), Error> {
     }
 
     {
-        let user_info = client.get_user_info(TOKEN).await?;
+        let user_info = client.get_user_info(&token).await?;
         println!("{user_info:#?}");
     }
 
